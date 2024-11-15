@@ -31,7 +31,6 @@ public class CalorieFinder {
     public Integer getSumOfThreeBiggestRucksacksByCalorieContent(List<Integer> elfRucksacks) {
         Collections.sort(elfRucksacks);
         Collections.reverse(elfRucksacks);
-        System.out.println(elfRucksacks);
 
         return elfRucksacks.get(0) + elfRucksacks.get(1) + elfRucksacks.get(2);
     }

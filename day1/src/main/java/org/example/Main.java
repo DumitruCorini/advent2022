@@ -10,7 +10,7 @@ public class Main {
         CalorieFinder calorieFinder = new CalorieFinder();
 
         try {
-            List<Integer> elfRucksackCaloriesFromFile = calorieFinder.getElfRucksackCaloriesFromFile("src/main/resources/input.txt");
+            List<Integer> elfRucksackCaloriesFromFile = calorieFinder.getElfRucksackCaloriesFromFile("day1/src/main/resources/input.txt");
             System.out.println(calorieFinder.getSumOfThreeBiggestRucksacksByCalorieContent(elfRucksackCaloriesFromFile));
         } catch (IOException e) {
             throw new RuntimeException(e);
