@@ -6,46 +6,61 @@ import java.util.Map;
 
 public class StrategyCalculator {
 
+    // Shapes to play depending on opponent played shape (opponentPlayedShape, ourShapeToPlay)
     private final Map<String, String> winStrategies;
-    private final Map<String, String> drawStrategies;
+    private final Map<String, String> losingStrategies;
 
     public StrategyCalculator() {
         winStrategies = new HashMap<>();
-        winStrategies.put("A", "Y");
-        winStrategies.put("B", "Z");
-        winStrategies.put("C", "X");
+        winStrategies.put("A", "B");
+        winStrategies.put("B", "C");
+        winStrategies.put("C", "A");
 
-        drawStrategies = new HashMap<>();
-        drawStrategies.put("A", "X");
-        drawStrategies.put("B", "Y");
-        drawStrategies.put("C", "Z");
+        losingStrategies = new HashMap<>();
+        losingStrategies.put("A", "C");
+        losingStrategies.put("B", "A");
+        losingStrategies.put("C", "B");
     }
 
     public String getStrategyToPlayFromRoundStrategy(String roundPredefinedStrategy) {
         return roundPredefinedStrategy.substring(2);
     }
 
-    public String getOpponentStrategy(String roundPredefinedStrategy) {
+    public String getOpponentShape(String roundPredefinedStrategy) {
         return roundPredefinedStrategy.substring(0, 1);
     }
 
-    public int calculateWinningPointsForRound(String ourPlayedStrategy, String opponentPlayedStrategy) {
-        String correctWinningStrategy = winStrategies.get(opponentPlayedStrategy);
-        if (ourPlayedStrategy.equals(correctWinningStrategy)) {
+    public int calculateWinningPointsForRound(String ourPlayedStrategy) {
+        // We will win
+        if (ourPlayedStrategy.equals("Z")) {
             return 6;
         }
-        String drawStrategy = drawStrategies.get(opponentPlayedStrategy);
-        if (drawStrategy.equals(ourPlayedStrategy)) {
+        // We will draw
+        if (ourPlayedStrategy.equals("Y")) {
             return 3;
         }
+        // We will lose
         return 0;
     }
 
+    public String getShapeToPlayFromRoundStrategy(String roundStrategy, String opponentPlayedShape) {
+        if (roundStrategy.equals("Z")) {
+            return winStrategies.get(opponentPlayedShape);
+        }
+
+        if (roundStrategy.equals("X")) {
+            return losingStrategies.get(opponentPlayedShape);
+        }
+
+        // If draw, we use the same shape as the opponent
+        return opponentPlayedShape;
+    }
+
     public int getPointsForShape(String playedStrategy) {
-        if (playedStrategy.equals("X")) {
+        if (playedStrategy.equals("A")) {
             return 1;
         }
-        if (playedStrategy.equals("Y")) {
+        if (playedStrategy.equals("B")) {
             return 2;
         }
         return 3;
@@ -53,13 +68,14 @@ public class StrategyCalculator {
 
     public int getRoundScore(String round) {
         String ourPlayedStrategy = getStrategyToPlayFromRoundStrategy(round);
-        String opponentPlayedStrategy = getOpponentStrategy(round);
+        String opponentPlayedShape = getOpponentShape(round);
+        String ourPlayedShapeFromStrategy = getShapeToPlayFromRoundStrategy(ourPlayedStrategy, opponentPlayedShape);
 
         int totalRoundScore = 0;
 
-        totalRoundScore += calculateWinningPointsForRound(ourPlayedStrategy, opponentPlayedStrategy);
+        totalRoundScore += calculateWinningPointsForRound(ourPlayedStrategy);
 
-        totalRoundScore += getPointsForShape(ourPlayedStrategy);
+        totalRoundScore += getPointsForShape(ourPlayedShapeFromStrategy);
 
         return totalRoundScore;
     }

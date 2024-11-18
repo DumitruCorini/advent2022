@@ -20,7 +20,7 @@ class StrategyCalculatorTest {
         // GIVEN
 
         // WHEN
-        String actualOpponentStrategy = strategyCalculator.getOpponentStrategy(roundPredefinedStrategy);
+        String actualOpponentStrategy = strategyCalculator.getOpponentShape(roundPredefinedStrategy);
 
         // THEN
         assertEquals(expectedOpponentStrategy, actualOpponentStrategy);
@@ -38,43 +38,82 @@ class StrategyCalculatorTest {
         assertEquals(expectedStrategyToPlay, actualStrategyToPlay);
     }
 
-    @ParameterizedTest
-    @MethodSource(value = "getWinningStrategies")
-    void should_get_6_points_for_winning_when_using_winning_strategy_against_opponent(String ourPlayedStrategy, String opponentPlayedStrategy) {
+    @Test
+    void should_get_6_points_for_winning_when_using_Z_strategy_against_opponent() {
         // GIVEN
+        String ourPlayedStrategy = "Z";
 
         // WHEN
         int expectedPointsForWinning = 6;
-        int actualPointsForWinning = strategyCalculator.calculateWinningPointsForRound(ourPlayedStrategy, opponentPlayedStrategy);
+        int actualPointsForWinning = strategyCalculator.calculateWinningPointsForRound(ourPlayedStrategy);
 
         // THEN
         assertEquals(expectedPointsForWinning, actualPointsForWinning);
     }
 
-    @ParameterizedTest
-    @MethodSource(value = "getDrawStrategies")
-    void should_get_3_points_for_draw_when_using_draw_strategy_against_opponent(String ourPlayedStrategy, String opponentPlayedStrategy) {
+    @Test
+    void should_get_3_points_for_draw_when_using_Y_strategy_against_opponent() {
         // GIVEN
+        String ourPlayedStrategy = "Y";
 
         // WHEN
         int expectedPointsForDraw = 3;
-        int actualPointsForDraw = strategyCalculator.calculateWinningPointsForRound(ourPlayedStrategy, opponentPlayedStrategy);
+        int actualPointsForDraw = strategyCalculator.calculateWinningPointsForRound(ourPlayedStrategy);
 
         // THEN
         assertEquals(expectedPointsForDraw, actualPointsForDraw);
     }
 
-    @ParameterizedTest
-    @MethodSource(value = "getLosingStrategies")
-    void should_get_0_points_for_loss_when_using_losing_strategy_against_opponent(String ourPlayedStrategy, String opponentPlayedStrategy) {
+    @Test
+    void should_get_0_points_for_loss_when_using_X_strategy_against_opponent() {
         // GIVEN
+        String ourPlayedStrategy = "X";
 
         // WHEN
         int expectedPointsForLoss = 0;
-        int actualPointsForLoss = strategyCalculator.calculateWinningPointsForRound(ourPlayedStrategy, opponentPlayedStrategy);
+        int actualPointsForLoss = strategyCalculator.calculateWinningPointsForRound(ourPlayedStrategy);
 
         // THEN
         assertEquals(expectedPointsForLoss, actualPointsForLoss);
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "getWinningShapesToPlayDependingOnOpponentShape")
+    void should_get_shape_to_play_when_we_have_to_win_following_Z_round_strategy_depending_on_opponent_shape(String expectedShapeToPlay, String opponentShape) {
+        // GIVEN
+        String roundStrategy = "Z";
+
+        // WHEN
+        String actualShapeToPlay = strategyCalculator.getShapeToPlayFromRoundStrategy(roundStrategy, opponentShape);
+
+        // THEN
+        assertEquals(expectedShapeToPlay, actualShapeToPlay);
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "getOpponentShapes")
+    void should_mirror_opponent_shape_when_following_draw_round_strategy_Y(String opponentShape) {
+        // GIVEN
+        String roundStrategy = "Y";
+
+        // WHEN
+        String actualShapeToPlay = strategyCalculator.getShapeToPlayFromRoundStrategy(roundStrategy, opponentShape);
+
+        // THEN
+        assertEquals(opponentShape, actualShapeToPlay);
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "getLosingShapesToPlayDependingOnOpponentShape")
+    void should_get_shape_to_play_when_following_lose_round_strategy_X_depending_on_opponent_shape(String expectedShapeToPlay, String opponentShape) {
+        // GIVEN
+        String roundStrategy = "X";
+
+        // WHEN
+        String actualShapeToPlay = strategyCalculator.getShapeToPlayFromRoundStrategy(roundStrategy, opponentShape);
+
+        // THEN
+        assertEquals(expectedShapeToPlay, actualShapeToPlay);
     }
 
     @ParameterizedTest
@@ -102,12 +141,12 @@ class StrategyCalculatorTest {
     }
 
     @Test
-    void should_get_15_score_for_entire_tournament_read_from_file() {
+    void should_get_12_score_for_entire_tournament_read_from_file() {
         // GIVEN
         List<String> linesFromFile = FileUtils.getLinesFromFile("src/test/resources/inputTest.txt");
 
         // WHEN
-        int expectedTournamentTotalScore = 15;
+        int expectedTournamentTotalScore = 12;
         int actualTournamentTotalScore = strategyCalculator.getTournamentScore(linesFromFile);
 
         // THEN
@@ -122,6 +161,30 @@ class StrategyCalculatorTest {
         );
     }
 
+    private static Stream<Arguments> getWinningShapesToPlayDependingOnOpponentShape() {
+        return Stream.of(
+                Arguments.of("A", "C"),
+                Arguments.of("B", "A"),
+                Arguments.of("C", "B")
+        );
+    }
+
+    private static Stream<Arguments> getOpponentShapes() {
+        return Stream.of(
+                Arguments.of("A"),
+                Arguments.of("B"),
+                Arguments.of("C")
+        );
+    }
+
+    private static Stream<Arguments> getLosingShapesToPlayDependingOnOpponentShape() {
+        return Stream.of(
+                Arguments.of("C", "A"),
+                Arguments.of("A", "B"),
+                Arguments.of("B", "C")
+        );
+    }
+
     private static Stream<Arguments> provideOpponentStrategyStringsForRoundPredefinedStrategy() {
         return Stream.of(
                 Arguments.of("A Y", "A"),
@@ -130,43 +193,19 @@ class StrategyCalculatorTest {
         );
     }
 
-    private static Stream<Arguments> getWinningStrategies() {
-        return Stream.of(
-                Arguments.of("Y", "A"),
-                Arguments.of("Z", "B"),
-                Arguments.of("X", "C")
-        );
-    }
-
-    private static Stream<Arguments> getDrawStrategies() {
-        return Stream.of(
-                Arguments.of("X", "A"),
-                Arguments.of("Y", "B"),
-                Arguments.of("Z", "C")
-        );
-    }
-
-    private static Stream<Arguments> getLosingStrategies() {
-        return Stream.of(
-                Arguments.of("X", "B"),
-                Arguments.of("Y", "C"),
-                Arguments.of("Z", "A")
-        );
-    }
-
     private static Stream<Arguments> getPossiblePointsForShape() {
         return Stream.of(
-                Arguments.of("X", 1),
-                Arguments.of("Y", 2),
-                Arguments.of("Z", 3)
+                Arguments.of("A", 1),
+                Arguments.of("B", 2),
+                Arguments.of("C", 3)
         );
     }
 
     private static Stream<Arguments> getRoundPoints() {
         return Stream.of(
-                Arguments.of("A Y", 8),
+                Arguments.of("A Y", 4),
                 Arguments.of("B X", 1),
-                Arguments.of("C Z", 6)
+                Arguments.of("C Z", 7)
         );
     }
 }
