@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -66,6 +67,64 @@ public class RucksackServiceTest {
 
         // THEN
         assertEquals(expectedDuplicatedItemPriority, actualDuplicatedItemPriority);
+    }
+
+    @Test
+    void should_group_6_items_into_two_groups() {
+        // GIVEN
+        List<String> rucksacks = new ArrayList<>();
+        rucksacks.add("vJrwpWtwJgWrhcsFMMfFFhFp");
+        rucksacks.add("jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL");
+        rucksacks.add("PmmdzqPrVvPwwTWBwg");
+        rucksacks.add("ttgJtRGJQctTZtZT");
+        rucksacks.add("wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn");
+        rucksacks.add("CrZsJsPPZsGzwwsLwLmpwMDw");
+
+        // WHEN
+        List<String> expectedFirstGroup = new ArrayList<>();
+        expectedFirstGroup.add(rucksacks.get(0));
+        expectedFirstGroup.add(rucksacks.get(1));
+        expectedFirstGroup.add(rucksacks.get(2));
+        List<String> expectedSecondGroup = new ArrayList<>();
+        expectedSecondGroup.add(rucksacks.get(3));
+        expectedSecondGroup.add(rucksacks.get(4));
+        expectedSecondGroup.add(rucksacks.get(5));
+
+        List<List<String>> actualGroupedRucksacks = rucksackService.getGroupedRucksacks(rucksacks);
+
+        // THEN
+        assertEquals(actualGroupedRucksacks.get(0), expectedFirstGroup);
+        assertEquals(actualGroupedRucksacks.get(1), expectedSecondGroup);
+    }
+
+    @Test
+    void should_get_badge_A_for_rucksacks_aA_bA_cA() {
+        // GIVEN
+        List<String> rucksacksGroup = new ArrayList<>();
+        rucksacksGroup.add("aA");
+        rucksacksGroup.add("bA");
+        rucksacksGroup.add("cA");
+
+        // WHEN
+        Character expectedRucksackGroupBadge = 'A';
+        Character actualRucksackGroupBadge = rucksackService.getBadgeForGroup(rucksacksGroup);
+
+        // THEN
+        assertEquals(expectedRucksackGroupBadge, actualRucksackGroupBadge);
+    }
+
+    @Test
+    void should_get_total_group_badge_priority_70_from_file() {
+        // GIVEN
+        List<String> rucksacks = rucksackService.getRucksacksFromFile("inputTest.txt");
+        List<List<String>> groupedRucksacks = rucksackService.getGroupedRucksacks(rucksacks);
+
+        // WHEN
+        Integer expectedPrioritySum = 70;
+        Integer actualPrioritySum = rucksackService.getBadgePrioritySum(groupedRucksacks);
+
+        // THEN
+        assertEquals(expectedPrioritySum, actualPrioritySum);
     }
 
     private static Stream<Arguments> getRucksacks() {

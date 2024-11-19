@@ -70,4 +70,47 @@ public class RucksackService {
 
         return totalItemPriorities;
     }
+
+    public List<List<String>> getGroupedRucksacks(List<String> rucksacks) {
+        List<List<String>> groupedRucksacks = new ArrayList<>();
+
+        for (int idx = 0; idx < rucksacks.size(); idx++) {
+            List<String> rucksacksGroup;
+            if (idx % 3 == 0) {
+                rucksacksGroup = new ArrayList<>();
+                groupedRucksacks.add(rucksacksGroup);
+            } else {
+                rucksacksGroup = groupedRucksacks.getLast();
+            }
+
+            rucksacksGroup.add(rucksacks.get(idx));
+        }
+
+        return groupedRucksacks;
+    }
+
+    public Character getBadgeForGroup(List<String> rucksacks) {
+        String firstRucksack = rucksacks.getFirst();
+        for (char itemInRucksack : firstRucksack.toCharArray()) {
+            List<String> rucksacksWithSameItemTypes = rucksacks.stream()
+                    .filter(potentialRucksackWithSameItem -> potentialRucksackWithSameItem.indexOf(itemInRucksack) > -1)
+                    .toList();
+            if (rucksacksWithSameItemTypes.size() == 3) {
+                return itemInRucksack;
+            }
+        }
+        return ' ';
+    }
+
+    public Integer getBadgePrioritySum(List<List<String>> groupedRucksacks) {
+        int badgePrioritySum = 0;
+
+        for (List<String> groupedRucksack : groupedRucksacks) {
+            Character badge = getBadgeForGroup(groupedRucksack);
+            int badgePriority = getPriorityForItem(badge);
+            badgePrioritySum += badgePriority;
+        }
+
+        return badgePrioritySum;
+    }
 }
