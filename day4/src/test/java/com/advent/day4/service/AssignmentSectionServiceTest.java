@@ -48,13 +48,39 @@ public class AssignmentSectionServiceTest {
     }
 
     @Test
-    void should_detect_total_number_of_assignments_with_section_inclusions_5_from_file() {
+    void should_detect_total_number_5_of_assignments_with_section_inclusions_from_file() {
         // GIVEN
         List<String> assignmentPairs = assignmentSectionService.getAssignmentPairsFromFile("inputTest.txt");
 
         // WHEN
         Integer expectedNumberOfInclusions = 5;
         Integer actualNumberOfInclusions = assignmentSectionService.getTotalNumberOfAssignmentsWithSectionInclusions(assignmentPairs);
+
+        // THEN
+        assertEquals(expectedNumberOfInclusions, actualNumberOfInclusions);
+    }
+
+    @ParameterizedTest
+    @MethodSource(value = "getSectionOverlapData")
+    void should_detect_assignments_overlap(String assignmentPairString, boolean expectedOverlap) {
+        // GIVEN
+        List<Section> assignmentPair = assignmentSectionService.buildSectionsPair(assignmentPairString);
+
+        // WHEN
+        boolean actualOverlap = assignmentSectionService.doAssignmentsOverlap(assignmentPair);
+
+        // THEN
+        assertEquals(expectedOverlap, actualOverlap);
+    }
+
+    @Test
+    void should_detect_total_number_12_of_assignments_overlap_with_section_inclusions_from_file() {
+        // GIVEN
+        List<String> assignmentPairs = assignmentSectionService.getAssignmentPairsFromFile("inputTest.txt");
+
+        // WHEN
+        Integer expectedNumberOfInclusions = 12;
+        Integer actualNumberOfInclusions = assignmentSectionService.getTotalNumberOfAssignmentsOverlap(assignmentPairs);
 
         // THEN
         assertEquals(expectedNumberOfInclusions, actualNumberOfInclusions);
@@ -67,11 +93,28 @@ public class AssignmentSectionServiceTest {
                 Arguments.of("2-3,2-3", true),
                 Arguments.of("2-8,3-7", true),
                 Arguments.of("6-6,4-6", true),
+                Arguments.of("3-5,2-4", false),
                 Arguments.of("2-3,4-5", false),
                 Arguments.of("2-4,6-8", false),
                 Arguments.of("5-7,7-9", false),
                 Arguments.of("2-6,4-8", false),
                 Arguments.of("3-5,4-6", false)
+        );
+    }
+
+    private static Stream<Arguments> getSectionOverlapData() {
+        return Stream.of(
+                Arguments.of("3-5,2-6", true),
+                Arguments.of("2-5,3-4", true),
+                Arguments.of("2-3,2-3", true),
+                Arguments.of("2-8,3-7", true),
+                Arguments.of("6-6,4-6", true),
+                Arguments.of("5-7,7-9", true),
+                Arguments.of("2-6,4-8", true),
+                Arguments.of("3-5,4-6", true),
+                Arguments.of("3-5,2-4", true),
+                Arguments.of("2-3,4-5", false),
+                Arguments.of("2-4,6-8", false)
         );
     }
 }

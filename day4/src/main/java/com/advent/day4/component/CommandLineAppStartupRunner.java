@@ -20,5 +20,9 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
         int assignmentPairsWithInclusion = assignmentSectionService.getTotalNumberOfAssignmentsWithSectionInclusions(assignmentPairs);
 
         System.out.println("Total number of assignments with inclusions: " + assignmentPairsWithInclusion);
+
+        int assignmentsOverlap = assignmentSectionService.getTotalNumberOfAssignmentsOverlap(assignmentPairs);
+
+        System.out.println("Total number of assignments with overlap: " + assignmentsOverlap);
     }
 }

@@ -58,4 +58,25 @@ public class AssignmentSectionService {
 
         return assignmentsWithSectionInclusions;
     }
+
+    public boolean doAssignmentsOverlap(List<Section> assignmentPair) {
+        Section firstSection = assignmentPair.get(0);
+        Section secondSection = assignmentPair.get(1);
+
+        return (secondSection.getStart() <= firstSection.getEnd() && firstSection.getEnd() <= secondSection.getEnd()) ||
+                (firstSection.getStart() <= secondSection.getStart() && secondSection.getStart() <= firstSection.getEnd()) ||
+                (firstSection.getStart() <= secondSection.getEnd() && secondSection.getEnd() <= firstSection.getEnd());
+    }
+
+    public Integer getTotalNumberOfAssignmentsOverlap(List<String> assignmentPairs) {
+        int assignementOverlaps = 0;
+
+        for (String assignmentPair : assignmentPairs) {
+            if (doAssignmentsOverlap(buildSectionsPair(assignmentPair))) {
+                assignementOverlaps++;
+            }
+        }
+
+        return assignementOverlaps;
+    }
 }
