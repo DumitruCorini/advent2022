@@ -12,6 +12,7 @@
         <module name="day1" />
         <module name="day4" />
         <module name="day5" />
+        <module name="day5 (1)" />
       </profile>
     </annotationProcessing>
   </component>
@@ -22,6 +23,7 @@
       <module name="day3" options="-parameters" />
       <module name="day4" options="-parameters" />
       <module name="day5" options="-parameters" />
+      <module name="day5 (1)" options="-parameters" />
     </option>
   </component>
 </project>
