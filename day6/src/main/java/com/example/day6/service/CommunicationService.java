@@ -7,7 +7,7 @@ import java.util.List;
 
 @Service
 public class CommunicationService {
-    public int getMarkerPositionFromDatastreamBuffer(String datastreamBuffer) {
+    public int getMarkerPositionFromDatastreamBuffer(String datastreamBuffer, int distinctCharactersSize) {
         List<Character> seenCharacters = new ArrayList<>();
         int markerIndex = 1;
 
@@ -22,7 +22,7 @@ public class CommunicationService {
                 seenCharacters.add(character);
             }
 
-            if (seenCharacters.size() == 4) {
+            if (seenCharacters.size() == distinctCharactersSize) {
                 return markerIndex;
             }
 

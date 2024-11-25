@@ -21,8 +21,11 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
     @Override
     public void run(String... args) {
         String datastreamBuffer = readFile("input.txt").getFirst();
-        int markerPosition = communicationService.getMarkerPositionFromDatastreamBuffer(datastreamBuffer);
-        System.out.println("Marker position: " + markerPosition);
+        int markerPositionForPacket = communicationService.getMarkerPositionFromDatastreamBuffer(datastreamBuffer, 4);
+        System.out.println("Marker position for packet: " + markerPositionForPacket);
+
+        int markerPositionForMessage = communicationService.getMarkerPositionFromDatastreamBuffer(datastreamBuffer, 14);
+        System.out.println("Marker position for packet: " + markerPositionForMessage);
     }
 
     private List<String> readFile(String fileName) {
