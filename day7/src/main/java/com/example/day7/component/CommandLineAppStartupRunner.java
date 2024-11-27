@@ -17,10 +17,18 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        // Part 1
         List<String> logs = deviceService.readLogsFromFile("input.txt");
         Map<String, Directory> directoryStructure = deviceService.createDirectoryPathFromLog(logs);
         List<String> smallDirectories = deviceService.getDirectoriesWithSizesSmallerThan(directoryStructure, 100000);
-        Integer sizeOfSmallDirectories = deviceService.getSizeOfSmallDirectories(directoryStructure, smallDirectories);
+        Integer sizeOfSmallDirectories = deviceService.getSizeOfDirectories(directoryStructure, smallDirectories);
         System.out.println("Total size of small directories: " + sizeOfSmallDirectories);
+
+        // Part 2
+        Integer mainDirectorySize = directoryStructure.get("/").getSize();
+        Integer neededSpaceToFree = deviceService.getSpaceToFree(mainDirectorySize);
+        List<String> bigDirectories = deviceService.getDirectoriesWithSizesBiggerThan(directoryStructure, neededSpaceToFree);
+        Integer sizeOfBigSufficientDirectoryToDelete = deviceService.getSmallestSizeBetween(directoryStructure, bigDirectories);
+        System.out.println("Size of sufficient directory to clear: " + sizeOfBigSufficientDirectoryToDelete);
     }
 }

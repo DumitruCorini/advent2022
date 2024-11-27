@@ -19,6 +19,9 @@ import static java.util.Objects.isNull;
 @Service
 public class DeviceService {
 
+    private static final Integer MAX_DEVICE_SPACE = 70000000;
+    private static final Integer NEEDED_UNUSED_SPACE = 30000000;
+
     public Map<String, Directory> createDirectoryPathFromLog(List<String> logLines) {
         // Map with:
         // Key: directory path
@@ -78,15 +81,40 @@ public class DeviceService {
                 .toList();
     }
 
-    public Integer getSizeOfSmallDirectories(Map<String, Directory> directories, List<String> smallDirectoryPaths) {
+    public Integer getSizeOfDirectories(Map<String, Directory> directories, List<String> directoryPaths) {
         Integer sum = 0;
 
-        for (String smallDirectoryPath : smallDirectoryPaths) {
+        for (String smallDirectoryPath : directoryPaths) {
             Directory directory = directories.get(smallDirectoryPath);
             sum += directory.getSize();
         }
 
         return sum;
+    }
+
+    public Integer getSpaceToFree(Integer currentlyUsedSpace) {
+        Integer currentlyUnusedSpace = MAX_DEVICE_SPACE - currentlyUsedSpace;
+        return NEEDED_UNUSED_SPACE - currentlyUnusedSpace;
+    }
+
+    public List<String> getDirectoriesWithSizesBiggerThan(Map<String, Directory> directoryStructure, Integer sizeToCompareTo) {
+        return directoryStructure.entrySet().stream()
+                .filter(directoryEntry -> directoryEntry.getValue().getSize() > sizeToCompareTo)
+                .map(Map.Entry::getKey)
+                .toList();
+    }
+
+    public Integer getSmallestSizeBetween(Map<String, Directory> directoryStructure, List<String> bigDirectories) {
+        Integer smallestSize = Integer.MAX_VALUE;
+
+        for (String bigDirectory : bigDirectories) {
+            Integer size = directoryStructure.get(bigDirectory).getSize();
+            if (size < smallestSize) {
+                smallestSize = size;
+            }
+        }
+
+        return smallestSize;
     }
 
     private void treatLSModeForLogLine(String logLine, String currentDirectoryPath, Map<String, Directory> directories) {

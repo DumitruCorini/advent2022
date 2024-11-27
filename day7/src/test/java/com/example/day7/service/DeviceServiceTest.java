@@ -280,11 +280,57 @@ public class DeviceServiceTest {
 
         // WHEN
         List<String> actualSmallDirectories = deviceService.getDirectoriesWithSizesSmallerThan(directoryStructure, 100000);
-        Integer actualSmallDirectoriesSizesSum = deviceService.getSizeOfSmallDirectories(directoryStructure, actualSmallDirectories);
+        Integer actualSmallDirectoriesSizesSum = deviceService.getSizeOfDirectories(directoryStructure, actualSmallDirectories);
 
         // THEN
         assertEquals(expectedSmallDirectories, actualSmallDirectories);
         assertEquals(expectedSmallDirectorySizesSum, actualSmallDirectoriesSizesSum);
+    }
+
+    @Test
+    void should_get_size_of_directory_to_delete_100000_from_size_of_main_directory() {
+        // GIVEN
+        Integer currentlyUsedSpace = 48381165;
+        Integer expectedSpaceToFree = 8381165;
+
+        // WHEN
+        Integer actualSpaceToFree = deviceService.getSpaceToFree(currentlyUsedSpace);
+
+        // THEN
+        assertEquals(expectedSpaceToFree, actualSpaceToFree);
+    }
+
+    @Test
+    void should_get_directories_from_file_inputTest_that_are_bigger_than_8381165() {
+        // GIVEN
+        String fileName = "inputTest.txt";
+        List<String> logs = deviceService.readLogsFromFile(fileName);
+        Map<String, Directory> directoryStructure = deviceService.createDirectoryPathFromLog(logs);
+        Integer sizeToCompareTo = 8381165;
+        List<String> expectedBigDirectories = new ArrayList<>(Arrays.asList("/d/", "/"));
+
+        // WHEN
+        List<String> actualBigDirectories = deviceService.getDirectoriesWithSizesBiggerThan(directoryStructure, sizeToCompareTo);
+
+        // THEN
+        assertEquals(expectedBigDirectories, actualBigDirectories);
+    }
+
+    @Test
+    void should_get_smallest_directory_between_directories_with_size_bigger_than_8381165_in_text_file_inputTest() {
+        // GIVEN
+        String fileName = "inputTest.txt";
+        List<String> logs = deviceService.readLogsFromFile(fileName);
+        Map<String, Directory> directoryStructure = deviceService.createDirectoryPathFromLog(logs);
+        Integer sizeToCompareTo = 8381165;
+        List<String> bigDirectories = deviceService.getDirectoriesWithSizesBiggerThan(directoryStructure, sizeToCompareTo);
+        Integer expectedSizeOfSmallestDirectory = 24933642;
+
+        // WHEN
+        Integer actualSizeOfSmallestDirectory = deviceService.getSmallestSizeBetween(directoryStructure, bigDirectories);
+
+        // THEN
+        assertEquals(expectedSizeOfSmallestDirectory, actualSizeOfSmallestDirectory);
     }
 
     private List<String> createLogLines(String... logLine) {
