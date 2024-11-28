@@ -57,6 +57,91 @@ public class ForestManagerServiceTest {
         assertEquals(expectedVisibleTreeCount, actualVisibleTreeCount);
     }
 
+    @Test
+    void should_get_highest_visibility_score_0_for_tree_in_forest_with_single_line_and_column() {
+        // GIVEN
+        List<List<Integer>> forest = forestManagerService.createForestFromTextBlock("""
+                1
+                """);
+        Integer expectedHighestTreeVisibilityScore = 0;
+
+        // WHEN
+        Integer actualHighestTreeVisibilityScore = forestManagerService.getHighestTreeVisibilityScore(forest);
+
+        // THEN
+        assertEquals(expectedHighestTreeVisibilityScore, actualHighestTreeVisibilityScore);
+    }
+
+    @Test
+    void should_get_highest_visibility_score_1_for_tree_in_forest_with_3_lines_and_columns() {
+        // GIVEN
+        List<List<Integer>> forest = forestManagerService.createForestFromTextBlock("""
+                121
+                212
+                121
+                """);
+        Integer expectedHighestTreeVisibilityScore = 1;
+
+        // WHEN
+        Integer actualHighestTreeVisibilityScore = forestManagerService.getHighestTreeVisibilityScore(forest);
+
+        // THEN
+        assertEquals(expectedHighestTreeVisibilityScore, actualHighestTreeVisibilityScore);
+    }
+
+    @Test
+    void should_get_highest_visibility_score_8_for_tree_in_forest_with_5_lines_and_columns() {
+        // GIVEN
+        /*
+         * Visibility scores for this forest
+         * 0 0 0 0 0
+         * 0 1 4 1 0
+         * 0 6 1 2 0
+         * 0 1 8 3 0
+         * 0 0 0 0 0
+         */
+        List<List<Integer>> forest = forestManagerService.createForestFromTextBlock("""
+                30373
+                25512
+                65332
+                33549
+                35390
+                """);
+        Integer expectedHighestTreeVisibilityScore = 8;
+
+        // WHEN
+        Integer actualHighestTreeVisibilityScore = forestManagerService.getHighestTreeVisibilityScore(forest);
+
+        // THEN
+        assertEquals(expectedHighestTreeVisibilityScore, actualHighestTreeVisibilityScore);
+    }
+
+    @Test
+    void should_get_highest_visibility_score_56_in_forest_with_10_lines_and_5_columns() {
+        // GIVEN
+        /* Visibility scores for this forest
+         * 0 0 0  0 0  0 0  0  0  0
+         * 0 1 1  9 8  1 18 1  2  0
+         * 0 2 16 1 24 4 1  56 2  0
+         * 0 3 1  1 12 1 4  7  24 0
+         * 0 0 0  0 0  0 0  0  0  0
+         */
+        List<List<Integer>> forest = forestManagerService.createForestFromTextBlock("""
+                0121123120
+                2002323014
+                0120320431
+                0100201341
+                2120213010
+                """);
+        Integer expectedHighestTreeVisibilityScore = 56;
+
+        // WHEN
+        Integer actualHighestTreeVisibilityScore = forestManagerService.getHighestTreeVisibilityScore(forest);
+
+        // THEN
+        assertEquals(expectedHighestTreeVisibilityScore, actualHighestTreeVisibilityScore);
+    }
+
     private static Stream<Arguments> getForestWithExpectedVisibleTrees() {
         return Stream.of(
                 Arguments.of("""

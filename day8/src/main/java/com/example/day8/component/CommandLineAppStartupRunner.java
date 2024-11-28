@@ -15,8 +15,13 @@ public class CommandLineAppStartupRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        // Part 1
         List<List<Integer>> forest = forestManagerService.createForestFromFile("input.txt");
         int visibleTreesCount = forestManagerService.getVisibleTreesCount(forest);
         System.out.println("Visible trees count: " + visibleTreesCount);
+
+        // Part 2
+        Integer highestTreeVisibilityScore = forestManagerService.getHighestTreeVisibilityScore(forest);
+        System.out.println("Highest tree visibility score: " + highestTreeVisibilityScore);
     }
 }

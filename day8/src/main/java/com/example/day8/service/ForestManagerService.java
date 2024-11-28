@@ -61,8 +61,8 @@ public class ForestManagerService {
 
                 // Check if the tree is hidden:
                 // Tree is hidden if it has a tree that is bigger or the same size in all four directions
-                List<Integer> treesToLeft = forestLine.subList(0, treeIdx);
-                List<Integer> treesToRight = forestLine.subList(treeIdx + 1, forestLine.size());
+                List<Integer> treesToLeft = getTreesToLeft(forestLine, treeIdx);
+                List<Integer> treesToRight = getTreesToRight(forestLine, treeIdx);
                 List<Integer> treesAbove = createTreesAbove(forest, forestLineIdx, treeIdx);
                 List<Integer> treesBelow = createTreesBelow(forest, forestLineIdx, treeIdx);
 
@@ -78,11 +78,67 @@ public class ForestManagerService {
         return visibleTreeCount;
     }
 
+    public Integer getHighestTreeVisibilityScore(List<List<Integer>> forest) {
+        int highestTreeVisibilityScore = 0;
+
+        // Start with 1, and go until length - 1 because the trees at the borders of the forest always have visibility 0, 
+        // because they have at least one side that has no trees 
+        for (int forestLineIdx = 1; forestLineIdx < forest.size() - 1; forestLineIdx++) {
+            List<Integer> forestLine = forest.get(forestLineIdx);
+            for (int treeIdx = 1; treeIdx < forestLine.size() - 1; treeIdx++) {
+                Integer treeSize = forestLine.get(treeIdx);
+
+                // To get the current tree visibility score, we have to get the number of trees that are smaller or equal in size:
+                //  for the trees to the left, starting from the last tree
+                //  for the trees to the right, starting from the beginning
+                //  for the trees above, starting from the end
+                //  for the trees below, starting from the beginning
+                // multiply these four numbers to get the tree visibility score
+
+                List<Integer> treesToLeft = getTreesToLeft(forestLine, treeIdx);
+                List<Integer> treesToRight = getTreesToRight(forestLine, treeIdx);
+                List<Integer> treesAbove = createTreesAbove(forest, forestLineIdx, treeIdx);
+                List<Integer> treesBelow = createTreesBelow(forest, forestLineIdx, treeIdx);
+
+                Integer treeVisibility = 1;
+                treeVisibility *= getTreeVisibilityScore(treesToLeft.reversed(), treeSize);
+                treeVisibility *= getTreeVisibilityScore(treesToRight, treeSize);
+                treeVisibility *= getTreeVisibilityScore(treesAbove.reversed(), treeSize);
+                treeVisibility *= getTreeVisibilityScore(treesBelow, treeSize);
+
+                if (treeVisibility > highestTreeVisibilityScore) {
+                    highestTreeVisibilityScore = treeVisibility;
+                }
+            }
+        }
+
+        return highestTreeVisibilityScore;
+    }
+
+    private static Integer getTreeVisibilityScore(List<Integer> treesToCheck, Integer currentTreeSize) {
+        Integer currentTreeVisibility = 0;
+        for (Integer treeToCheck : treesToCheck) {
+            currentTreeVisibility++;
+            if (currentTreeSize <= treeToCheck) {
+                break;
+            }
+        }
+        return currentTreeVisibility;
+    }
+
+    private List<Integer> getTreesToLeft(List<Integer> forestLine, int treeIdx) {
+        return forestLine.subList(0, treeIdx);
+    }
+
+    private List<Integer> getTreesToRight(List<Integer> forestLine, int treeIdx) {
+        return forestLine.subList(treeIdx + 1, forestLine.size());
+    }
+
     private List<Integer> createTreesAbove(List<List<Integer>> forest, int rowIndex, int treeIdx) {
         List<Integer> treesAbove = new ArrayList<>();
 
-        for (int treeAboveIdx = 0; treeAboveIdx < rowIndex; treeAboveIdx++) {
-            treesAbove.add(forest.get(treeAboveIdx).get(treeIdx));
+        for (int treeAboveRowIdx = 0; treeAboveRowIdx < rowIndex; treeAboveRowIdx++) {
+            treesAbove.add(forest.get(treeAboveRowIdx).get(treeIdx));
         }
 
         return treesAbove;
